@@ -31,6 +31,7 @@ namespace Ytyaru.Collections
             Delimiter = delimiter;
             children = new List<Node<V>>();
             Children = new ReadOnlyCollection<Node<V>>(children);
+            Root = new Node<V>("Root");
         }
     }
 }

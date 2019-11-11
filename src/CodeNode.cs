@@ -21,6 +21,21 @@ namespace Ytyaru.Collections
             return this;
         }
         */
+        public Node<V> Add(string key, V value=default) {
+            foreach (var child in Children) {
+//                if (child.Key == key) { retturn child; } // 既存ならそれを返す
+                if (child.Key == key) { return this; } // 既存なら何もしない
+            }
+            children.Add(new Node<V>(key, value, this)); // 未存なら新規生成する
+            return this;
+            /*
+            if (children.All(c => c.Key != key)) { // 既存なら新規作成しない（keyを一意にするため）
+                children.Add(new Node<V>(key, value));
+            }
+            return this;
+            */
+        }
+
 //        public Node<V> this[string path] {
         public V this[string path] {
             set {
@@ -36,7 +51,11 @@ namespace Ytyaru.Collections
 //                return FindAndNewNode(path, 0, this);
             }
         }
-        protected Node(Node<V> parent, string key, V value)
+// https://www.infoq.com/jp/articles/csharp-nullable-reference-case-study/
+#nullable disable
+//        public Node(Node<V> parent, string key, V value)
+        public Node(string key, V value=default, Node<V> parent=default)
+#nullable enable
         {
             Parent = parent; Key = key; Value = value;
             children = new List<Node<V>>();
@@ -69,7 +88,7 @@ namespace Ytyaru.Collections
         {
 //            string keys = path.Split(Delimiter);
 //            string keys = path.Split(delimiter);
-            string keys = path.Split(Tree<V>.DELIMITER);
+            string[] keys = path.Split(Tree<V>.DELIMITER);
             if (depth == keys.Length -1) {
                 if (node.Key == keys[depth]) { return node; }
 //                else { throw new NotExist(); }
@@ -85,40 +104,49 @@ namespace Ytyaru.Collections
 //            throw new NotExist();
             return null;
         }
+#nullable disable
         public Node<V> FindAndNewNode(in string path, int depth, in Node<V> node)
 //        public Node<V> FindAndNewNode(in string delimiter, in string path, int depth, in Node<V> node)
         {
 //            string keys = path.Split(Delimiter);
-            string keys = path.Split(Tree.DELIMITER);
+            string[] keys = path.Split(Tree<V>.DELIMITER);
+            Console.WriteLine($"{path} {depth} {node?.Key} {keys[depth]}");
             if (depth == keys.Length -1) {
                 if (node.Key == keys[depth]) { return node; }
                 else {
                     // 未存なら新規生成
-                    var youngest_brother = new Node<T>(keys[depth]);
-                    node.Parent.Add(youngest_brother);
+                    var youngest_brother = new Node<V>(keys[depth], default(V), (null == node.Parent) ? node : node.Parent);
+                    if (null == node.Parent) { // nodeがルートなら
+                        node.children.Add(youngest_brother);
+                    } else {
+                        node.Parent.children.Add(youngest_brother);
+                    }
                     return youngest_brother;
                 }
             }
             else {
+//                (null == node.Parent) ? depth : ++depth;
+//                if (null != node.Parent) { depth++; }
                 depth++;
-                var target = null;
+                Node<V> target = null;
                 if (node.Key == keys[depth]) { target = FindNode(path, depth, node); }
                 else {
                     foreach (var child in node.Children) {
                         if (child.Key == keys[depth]) {
-                            target = FindNode(path, depth, child);
+                            target = FindAndNewNode(path, depth, child);
                             break;
                         }
                     }
                     // 未存なら新規生成
                     if (null == target) {
-                        var child = new Node<T>(keys[depth]);
-                        node.Children.Add(child);
-                        target = FindNode(path, depth, child);
+                        var child = new Node<V>(keys[depth]);
+                        node.children.Add(child);
+                        target = FindAndNewNode(path, depth, child);
                     }
                 }
                 return target;
             }
         }
+#nullable enable
     }
 }

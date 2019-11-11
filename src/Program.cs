@@ -8,11 +8,13 @@ namespace Ytyaru.Collections
         {
             var tree = new Tree<string>();
             tree["A"] = "A";
-            tree["A","A1"] = "A1";
-            tree["A","A","A11"] = "A11";
-            tree["A","A2"] = "A2";
+            tree["A/A1"] = "A1";
+            tree["A/A1/A11"] = "A11";
+            tree["A/A2"] = "A2";
             tree["B"] = "B";
-            tree["B","B1"] = "B1";
+            tree["B/B1"] = "B1";
+            Console.WriteLine($"tree.Root.Children.Count: {tree.Root.Children}");
+            ShowTree(tree);
 //            var gen = new Generator();
 /*
             var tree = new Tree<string>()
@@ -38,7 +40,8 @@ namespace Ytyaru.Collections
         }
         static void ShowTree(Tree<string> tree)
         {
-            foreach (var node in tree.Children) { ShowNode(node); }
+//            foreach (var node in tree.Children) { ShowNode(node); }
+            foreach (var node in tree.Root.Children) { ShowNode(node); }
         }
         static void ShowNode(Node<string> node, int index=0)
         {
