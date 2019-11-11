@@ -13,34 +13,11 @@ namespace Ytyaru.Collections
             tree["A/A2"] = "A2";
             tree["B"] = "B";
             tree["B/B1"] = "B1";
-            Console.WriteLine($"tree.Root.Children.Count: {tree.Root.Children}");
+            Console.WriteLine($"tree.Root.Children.Count: {tree.Root.Children.Count}");
             ShowTree(tree);
-//            var gen = new Generator();
-/*
-            var tree = new Tree<string>()
-                .Add(new Node("using System;"))
-                .Add(new Node(""))
-                .Add(new Node("MyNamespace")
-                    .Add(new Node("MyClass")
-                        .Add(new Node("static void Main(string[] args)")
-                            .Add(new Node(@"Console.WriteLine(""Hello world"");")))));
-*/
-/*
-            var tree = new Tree<string>()
-                .Add("using System;")
-                .Add("")
-                .AddChild(new Node<string>("MyNamespace")
-                    .Add("MyClass")
-                        .Add("static void Main(string[] args)")
-                            .Add(@"Console.WriteLine(""Hello world"");")
-                );
-                */
-//            Console.WriteLine($"{tree}");
-//            ShowTree(tree);
         }
         static void ShowTree(Tree<string> tree)
         {
-//            foreach (var node in tree.Children) { ShowNode(node); }
             foreach (var node in tree.Root.Children) { ShowNode(node); }
         }
         static void ShowNode(Node<string> node, int index=0)

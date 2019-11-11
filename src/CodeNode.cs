@@ -39,12 +39,14 @@ namespace Ytyaru.Collections
 //        public Node<V> this[string path] {
         public V this[string path] {
             set {
+                if (String.IsNullOrEmpty(path)) { throw new Exception("インデクサには1字以上の文字列を指定してください。"); } 
                 // 未存なら新規生成または例外またはnull
                 // 既存なら指定値を代入する。インデクサで指定した位置にあるNodeに。
                 FindAndNewNode(path, 0, this).Value = value;
 //                FindAndNewNode(path, 0, this) = value;
             }
             get {
+                if (String.IsNullOrEmpty(path)) { throw new Exception("インデクサには1字以上の文字列を指定してください。"); } 
                 // 未存なら新規生成または例外またはnull
                 // 既存なら値を返す。インデクサで指定した位置にあるNodeの。
                 return FindAndNewNode(path, 0, this).Value;
@@ -61,33 +63,9 @@ namespace Ytyaru.Collections
             children = new List<Node<V>>();
             Children = new ReadOnlyCollection<Node<V>>(children);
         }
-        /*
-        public Node(V value)
-        {
-            children = new List<Node<T>>();
-            Children = new ReadOnlyCollection<Node<T>>(children);
-            Value = value;
-        }
-        public Node<V>() where T : new()
-        {
-            children = new List<Node<T>>();
-            Children = new ReadOnlyCollection<Node<T>>(children);
-            Value = new T();
-        }
-        */
-        /*
-        public Node()
-        {
-            children = new List<Node<T>>();
-            Children = new ReadOnlyCollection<Node<T>>(children);
-            Value = default;
-        }
-        */
 //        public Node<V>? FindNode(in string delimiter, in string path, int depth, in Node<V> node)
         public Node<V>? FindNode(in string path, int depth, in Node<V> node)
         {
-//            string keys = path.Split(Delimiter);
-//            string keys = path.Split(delimiter);
             string[] keys = path.Split(Tree<V>.DELIMITER);
             if (depth == keys.Length -1) {
                 if (node.Key == keys[depth]) { return node; }
@@ -108,7 +86,6 @@ namespace Ytyaru.Collections
         public Node<V> FindAndNewNode(in string path, int depth, in Node<V> node)
 //        public Node<V> FindAndNewNode(in string delimiter, in string path, int depth, in Node<V> node)
         {
-//            string keys = path.Split(Delimiter);
             string[] keys = path.Split(Tree<V>.DELIMITER);
             Console.WriteLine($"{path} {depth} {node?.Key} {keys[depth]}");
             if (depth == keys.Length -1) {
@@ -148,5 +125,51 @@ namespace Ytyaru.Collections
             }
         }
 #nullable enable
+
+        /*
+#nullable disable
+        public Node<V> FindAndNewNode(in string path, int depth, in Node<V> node)
+//        public Node<V> FindAndNewNode(in string delimiter, in string path, int depth, in Node<V> node)
+        {
+            string[] keys = path.Split(Tree<V>.DELIMITER);
+            Console.WriteLine($"{path} {depth} {node?.Key} {keys[depth]}");
+            if (depth == keys.Length -1) {
+                if (node.Key == keys[depth]) { return node; }
+                else {
+                    // 未存なら新規生成
+                    var youngest_brother = new Node<V>(keys[depth], default(V), (null == node.Parent) ? node : node.Parent);
+                    if (null == node.Parent) { // nodeがルートなら
+                        node.children.Add(youngest_brother);
+                    } else {
+                        node.Parent.children.Add(youngest_brother);
+                    }
+                    return youngest_brother;
+                }
+            }
+            else {
+//                (null == node.Parent) ? depth : ++depth;
+//                if (null != node.Parent) { depth++; }
+                depth++;
+                Node<V> target = null;
+                if (node.Key == keys[depth]) { target = FindNode(path, depth, node); }
+                else {
+                    foreach (var child in node.Children) {
+                        if (child.Key == keys[depth]) {
+                            target = FindAndNewNode(path, depth, child);
+                            break;
+                        }
+                    }
+                    // 未存なら新規生成
+                    if (null == target) {
+                        var child = new Node<V>(keys[depth]);
+                        node.children.Add(child);
+                        target = FindAndNewNode(path, depth, child);
+                    }
+                }
+                return target;
+            }
+        }
+#nullable enable
+        */
     }
 }
